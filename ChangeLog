@@ -1,0 +1,15 @@
+0.99.7: use new CNOlist class, add test, fix CNORwapFuzzy (default values), fix
+  typos in writeNetwork. defaultParameters were always used in CNORwrapfuzzy (fixed).
+  finalised the vignette.
+
+0.99.6: remove indexList and simList where possible. use preprocessing inside
+  CNORwrapFuzzy, CNOList argument renamed in CNOlist, add hashtable in
+  gaDiscrete.
+
+0.99.5: uniformisation of the names/arguments to reflect changes made in
+CellNOptR. Update vignettes
+0.99.4: add computeScoreFuzzy
+
+
+
+
