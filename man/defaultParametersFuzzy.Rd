@@ -7,7 +7,7 @@ Create a list of default parameters
 Parameters are required at different levels in the Fuzzy optimisation. This
 function provides a list with all parameters that are necessary.}
 \usage{
-defaultParametersFuzzy(data=NA, model=NA)
+defaultParametersFuzzy(data=NA, model=NA, nTF=7)
 }
 
 \arguments{
@@ -16,6 +16,9 @@ defaultParametersFuzzy(data=NA, model=NA)
   }
   \item{model}{
     the model that you want to optimise
+  }
+  \item{nTF}{number of discrete values to be used for each transfer function
+parameter.
   }
 }
 

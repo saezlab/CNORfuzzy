@@ -264,7 +264,7 @@ following code:
 
 
 % TODO SWITCH eval to true to generate the figures
-<<optimisation, eval=false, results=hide>>=
+<<optimisation, eval=true, results=hide>>=
 N = 1
 allRes = list()
 paramsList$verbose=TRUE
@@ -285,7 +285,7 @@ that are used by the \emph{compileMultiRes} function to build up a summary:
 
 
 %TODO switch to eval to true but keep fig to false since show=FALSE
-<<compileMultiRes, eval=false,  fig=false, include=false>>=
+<<compileMultiRes, eval=true,  fig=false, include=false>>=
 summary = compileMultiRes(allRes,show=FALSE)
 @
 
@@ -302,7 +302,7 @@ panel in Figure~\ref{fig:plotcnolist}). The plot is generated with the following
 
 %TODO switch to eval to true. Takes 3 minutes so we created the figure and saved
 %it in the SVN for now until the code is optimised.
-<<plotMeanFuzzyFit, eval=false ,fig=TRUE, include=false>>=
+<<plotMeanFuzzyFit, eval=true ,fig=TRUE, include=false>>=
 plotMeanFuzzyFit(0.1, summary$allFinalMSEs, allRes,
     plotParams=list(cmap_scale=0.5, cex=.9, margin=0.3))
 @

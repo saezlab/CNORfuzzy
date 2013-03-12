@@ -39,20 +39,22 @@ prep4simFuzzy <-function(model, paramsList, verbose=TRUE){
     Indices<-indexFinder(CNOlist=paramsList$data, model=model,verbose=verbose)
 
     # reference types according to indices
-    typeIDs = array(1,dim(model$interMat)[1])
+    typeIDs = array(1,dim(model$interMat)[1]) # same as length(nameSpecies)
     if (grepl('Stim',paramsList$type2Def,ignore.case = TRUE)) {typeIDs[Indices$stimulated] = 2}
     if (grepl('Inhib',paramsList$type2Def,ignore.case = TRUE)) {typeIDs[Indices$inhibited] = 2}
 
     #Compute the max number of inputs observed in the Model for a single reaction
-    maxInput<-colSums(model$interMat)
-    maxInput<-abs(min(maxInput))+1
+
+    # no need to compute it again, it is stored in fields4sim$maxInput
+    # maxInput<-colSums(model$interMat)
+    # maxInput<-abs(min(maxInput))+1
+    # maxInput <- fields4sim$maxInput
 
     #Make the empty matrices
-    gCube<-matrix(1, nrow=length(model$reacID),ncol=maxInput)
-    nCube<-matrix(1, nrow=length(model$reacID),ncol=maxInput)
-    kCube<-matrix(0, nrow=length(model$reacID),ncol=maxInput)
-    typeCube<-matrix(NA, nrow=length(model$reacID),ncol=maxInput)
-
+    gCube<-matrix(1, nrow=length(model$reacID),ncol=fields4sim$maxInput)
+    nCube<-matrix(1, nrow=length(model$reacID),ncol=fields4sim$maxInput)
+    kCube<-matrix(0, nrow=length(model$reacID),ncol=fields4sim$maxInput)
+    typeCube<-matrix(NA, nrow=length(model$reacID),ncol=fields4sim$maxInput)
 
     #Fill the matrices finalCube, ignoreCube and ixNeg, and maxIx
 

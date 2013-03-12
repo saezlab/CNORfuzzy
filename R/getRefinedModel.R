@@ -23,7 +23,7 @@ getRefinedModel = function(res, CNOlist, cutModel, cutSimList, refParams) {
     } 
 
 
-    indexList<-indexFinder(CNOlist=CNOlist,model=cutModel)
+    indexList<-indexFinder(CNOlist=CNOlist,model=cutModel, verbose=FALSE)
 
 
     verbose = refParams$verbose

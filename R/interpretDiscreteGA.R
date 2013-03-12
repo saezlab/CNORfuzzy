@@ -14,7 +14,7 @@
 ##############################################################################
 interpretDiscreteGA = function(model,paramsList,intString,bitString=NULL){
 
-    simList<-prep4simFuzzy(model=model,paramsList=paramsList)
+    simList<-prep4simFuzzy(model=model,paramsList=paramsList, verbose=FALSE)
 
 
 

@@ -1,4 +1,4 @@
-#useDynLib(CNORfuzzy)
+useDynLib(CNORfuzzy)
 
 export(
     "CNORwrapFuzzy",

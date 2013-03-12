@@ -10,7 +10,7 @@ This function is the genetic algorithm to be used to optimise a cFL model by fit
 gaDiscreteT1(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     NAFac=1, popSize=50, pMutation=0.5, maxTime=60, maxGens=500,
     stallGenMax=100, selPress=1.2, elitism=5, relTol=0.1,
-    verbose=TRUE,maxSizeHashTable = 5000)
+    verbose=TRUE,maxSizeHashTable = 1000)
 }
 \arguments{
   \item{CNOlist}{
@@ -85,11 +85,11 @@ contains similar results as well.
 \value{
 This function returns a list with elements:
 \item{bString}{The best bitstring}
-\item{Results}{A matrix with columns "Generation", "Best_score",
+\item{results}{A matrix with columns "Generation", "Best_score",
 "Best_bitString", "Stall_Generation", "Avg_Score_Gen", "Best_score_Gen"
 ,"Best_bit_Gen", "Iter_time".}
-\item{StringsTol}{The bitstrings whose scores are within the tolerance}
-\item{StringsTolScores}{The scores of the above-mentioned strings}
+\item{stringsTol}{The bitstrings whose scores are within the tolerance}
+\item{stringsTolScores}{The scores of the above-mentioned strings}
 }
 \author{
 M. Morris based on gaBinaryT1 function by C. Terfve (CellNOptR package)

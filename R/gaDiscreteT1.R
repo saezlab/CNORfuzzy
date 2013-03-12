@@ -17,7 +17,7 @@
 gaDiscreteT1 <-
 function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     NAFac=1, popSize=50, pMutation=0.5, maxTime=60, maxGens=500,
-    stallGenMax=100, selPress=1.2,elitism=5, relTol=0.1, verbose=TRUE,maxSizeHashTable=5000)
+    stallGenMax=100, selPress=1.2,elitism=5, relTol=0.1, verbose=TRUE,maxSizeHashTable=1000)
 {
 
     if ((class(CNOlist)=="CNOlist")==FALSE){
@@ -25,8 +25,8 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     } 
 
 
-    simList<-prep4simFuzzy(model=model,paramsList=paramsList)
-    indexList<-indexFinder(CNOlist=CNOlist,model=model)
+    simList<-prep4simFuzzy(model=model,paramsList=paramsList, verbose=FALSE)
+    indexList<-indexFinder(CNOlist=CNOlist,model=model, verbose=FALSE)
     if (is.null(initBstring)==TRUE){
         initBstring <- (sample.int(dim(paramsList$type2Funs)[1],
             (simList$numType1+simList$numType2),replace=TRUE)) - 1
@@ -45,8 +45,11 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     g<-0
     stallGen<-0
 
-    res<-rbind(c(g,bestobj,toString(bestbit),stallGen,Inf,Inf,toString(bestbit),0),c(g,bestobj,toString(bestbit),stallGen,Inf,Inf,toString(bestbit),0))
-    colnames(res)<-c("Generation","Best_score","Best_bitString","Stall_Generation","Avg_Score_Gen","Best_score_Gen","Best_bit_Gen","Iter_time")
+    res<-rbind(
+        c(g,bestobj,toString(bestbit),stallGen,Inf,Inf,toString(bestbit),0),
+        c(g,bestobj,toString(bestbit),stallGen,Inf,Inf,toString(bestbit),0))
+    colnames(res)<-c("Generation","Best_score","Best_bitString","Stall_Generation",
+        "Avg_Score_Gen","Best_score_Gen","Best_bit_Gen","Iter_time")
     PopTol<-rep(NA,bLength)
     PopTolScores<-NA
     nInTot = length(which(model$interMat==-1))
@@ -64,45 +67,8 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
         }
 
 
-    #cut the model according to bitstring
-        ModelCut<-model
-        bitCube = matrix(data = 0,nrow=dim(simList$finalCube)[1],ncol=dim(simList$finalCube)[2])
-        # currently not using params2train parameter in R version
-        bitCube[simList$reshapeType1] = intString[1:simList$numType1]
-        bitCube[simList$reshapeType2] = intString[(simList$numType1+1):length(intString)]
-        maxString = apply(bitCube,1,max)
-        bitString = maxString != 0
-        ModelCut$interMat<-ModelCut$interMat[,bitString]
-        ModelCut$notMat<-ModelCut$notMat[,bitString]
-        ModelCut$reacID<-ModelCut$reacID[bitString]
-        type1Vals = intString[1:simList$numType1];
-        type2Vals = intString[(simList$numType1+1):length(intString)];
-        simListCut<-simList
-    for (i in 1:dim(paramsList$type1Funs)[1]) {
-        #Set Type 1
-        simListCut$kCube[simList$reshapeType1[type1Vals == i]] = paramsList$type1Funs[i,3];
-        simListCut$nCube[simList$reshapeType1[type1Vals == i]] = paramsList$type1Funs[i,2];
-        simListCut$gCube[simList$reshapeType1[type1Vals == i]] = paramsList$type1Funs[i,1];
-        #Set Type 2
-        simListCut$kCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,3];
-        simListCut$nCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,2];
-        simListCut$gCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,1];
-           }
-        simListCut$finalCube<-simListCut$finalCube[bitString,]
-        simListCut$ixNeg<-simListCut$ixNeg[bitString,]
-        simListCut$ignoreCube<-simListCut$ignoreCube[bitString,]
-        simListCut$gCube<-simListCut$gCube[bitString,]
-        simListCut$nCube<-simListCut$nCube[bitString,]
-        simListCut$kCube<-simListCut$kCube[bitString,]
-        simListCut$maxIx<-simListCut$maxIx[bitString]
-    #compute the simulated results
-        SimResults<-simFuzzyT1(CNOlist=CNOlist,model=ModelCut,simList=simListCut)
-    #Compute the score
-        Score<-getFit(simResults=SimResults, CNOlist=CNOlist, model=ModelCut,
-            indexList=indexList, timePoint="t1", sizeFac=sizeFac, NAFac=NAFac,
-            nInTot=nInTot)
-        nDataP<-sum(!is.na(CNOlist@signals[[2]]))
-        Score<-Score/nDataP
+        Score = computeScoreFuzzy(CNOlist=CNOlist,model=model,simList=simList, 
+            indexList=indexList, paramsList, intString=x, sizeFac=sizeFac, NAFac=NAFac)
 
         return(Score)
 
@@ -162,6 +128,7 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
         #    }
         #
         # mkm this was changed in the matlab function, but I think it will work for fuzzy as implemented here
+
         Pop3par1<-Pop2[mates[,1],]
         Pop3par2<-Pop2[mates[,2],]
         Pop3<-Pop3par2
@@ -195,8 +162,10 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
             g,
             bestobj,
             toString(bestbit),
-            stallGen,(mean(scores,na.rm=TRUE)),
-            thisGenBest,toString(thisGenBestBit),
+            stallGen,
+            (mean(scores,na.rm=TRUE)),
+            thisGenBest,
+            toString(thisGenBestBit),
             as.numeric((t[length(t)]-t[length(t)-1]), units="secs"))
 
         names(resThisGen)<-c("Generation","Best_score","Best_bitString","Stall_Generation",
@@ -231,10 +200,10 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     }
     #end of the while loop
 
-    PopTol<-PopTol[-1,]
+    PopTol<-as.matrix(PopTol[-1,])
     PopTolScores<-PopTolScores[-1]
     TolBs<-which(PopTolScores <= scores[length(scores)]+tolScore)
-    PopTol<-PopTol[TolBs,]
+    PopTol<-as.matrix(PopTol[TolBs,])
     PopTolScores<-PopTolScores[TolBs]
     PopTolT<-cbind(PopTol,PopTolScores)
     PopTolT<-unique(PopTolT,MARGIN=1)
@@ -250,10 +219,11 @@ function(CNOlist, model, paramsList, initBstring=NULL, sizeFac=0.0001,
     res<-res[3:dim(res)[1],]
     rownames(res)<-NULL
     return(list(bString=bestbit,
+        bScore=bestobj,
         currBest=scores[length(scores)],
-        Results=res,
-        StringsTol=PopTol,
-        StringsTolScores=PopTolScores))
+        results=res,
+        stringsTol=PopTol,
+        stringsTolScores=PopTolScores))
    }
 
 # simple function to shift a data.frame
@@ -261,7 +231,7 @@ shift <- function(d, k) rbind( tail(d,k), head(d,-k), deparse.level = 0 )
 
 
 
-fillHashTable <-function(scoresHash, scores, Pop, maxSizeHashTable=5000)
+fillHashTable <-function(scoresHash, scores, Pop, maxSizeHashTable=1000)
 {
     # if not a data.frame, just return NULL
     if (is.null(scoresHash)==TRUE){ return(NULL)}

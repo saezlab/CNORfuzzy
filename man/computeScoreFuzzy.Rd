@@ -10,7 +10,8 @@ compute and return score of a model (cut using a bitstring).
 }
 
 \usage{
-computeScoreFuzzy(CNOlist, model,simList=NULL, indexList=NULL, paramsList, intString, sizeFac=0.0001,NAFac=1)
+computeScoreFuzzy(CNOlist, model,simList=NULL, indexList=NULL, paramsList, 
+    intString=NULL, sizeFac=0.0001,NAFac=1)
 }
 
 

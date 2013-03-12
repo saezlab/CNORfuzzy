@@ -19,8 +19,8 @@ reduceFuzzy = function(firstCutOff, CNOlist, model, res, params)
     } 
 
 
-    simList = prep4simFuzzy(model, params)
-    indexList<-indexFinder(CNOlist=CNOlist,model=model)
+    simList = prep4simFuzzy(model, params, verbose=FALSE)
+    indexList<-indexFinder(CNOlist=CNOlist,model=model, verbose=FALSE)
 
     # [finalBits finalParams finalScores ActuallyRemove ActuallyReplace] =
     # CNOReduceFuzzyOptInside(FirstCutOff, CNOProject, Res)
@@ -35,6 +35,7 @@ reduceFuzzy = function(firstCutOff, CNOlist, model, res, params)
     finalScores = array(NaN,4)
     interpModel = interpretDiscreteGA(model=model, intString=res$bString, paramsList=params)
     BaseSimRes = simFuzzyT1(CNOlist,interpModel$cutModel,interpModel$cutSimList)
+    # tocheck: why nInTot = 1 ?
     BaseMSE = getFit(BaseSimRes,CNOlist,interpModel$cutModel,indexList, timePoint="t1",sizeFac=0,NAFac=1,nInTot=1)
 
 
@@ -187,7 +188,7 @@ reduceFuzzy = function(firstCutOff, CNOlist, model, res, params)
             for (y in 1:dim(params$type1Funs)[1]) {
                 currTestModel = currCutModel
                 currTestSimList = currSimList
-                # ov    erwrite parameters that you are thinking about replacing
+                # overwrite parameters that you are thinking about replacing
                 # to see if AND gate can be replaced with OR gate with some
                 # other transfer function.
                 if (currTestSimList$typeCube[OrGates[inputsTest[o]==OrIns & currOutput==OrOuts],1] == 1) {
@@ -207,6 +208,8 @@ reduceFuzzy = function(firstCutOff, CNOlist, model, res, params)
                 Param2Ix = Param2Const[OrGates[inputsTest[o]==OrIns & currOutput==OrOuts],1]
                 # no    w cut sim list
                 currTestModel$interMat = currTestModel$interMat[,currBits]
+                currTestModel$notMat<-currTestModel$notMat[,currBits]
+                currTestModel$reacID<-currTestModel$reacID[currBits]
                 currTestSimList$kCube = simList$kCube[currBits,]
                 currTestSimList$nCube = simList$nCube[currBits,]
                 currTestSimList$gCube = simList$gCube[currBits,]
@@ -215,6 +218,7 @@ reduceFuzzy = function(firstCutOff, CNOlist, model, res, params)
                 currTestSimList$ignoreCube= simList$ignoreCube[currBits,];
                 currTestSimList$maxIx= simList$maxIx[currBits];
                 # simulate and score
+
                 SimResults = simFuzzyT1(CNOlist,currTestModel,currTestSimList)
                 testMSE = getFit(SimResults,CNOlist,currTestModel,indexList, timePoint="t1",sizeFac=0,NAFac=1,nInTot=1)
                 testMSE = testMSE/nDP

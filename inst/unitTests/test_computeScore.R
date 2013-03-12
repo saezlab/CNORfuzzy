@@ -12,7 +12,7 @@
 #  CNO website: http://www.ebi.ac.uk/saezrodriguez/software.html
 #
 ##############################################################################
-# $Id: test_computeScore.R 2339 2012-09-06 09:08:02Z cokelaer $
+# $Id: test_computeScore.R 2803 2012-11-21 10:59:05Z cokelaer $
 # This is a unit test that checks te output of the computeScore function
 
 
@@ -71,7 +71,8 @@ test_computeScore <- function(){
     t2-t1
     print(res)
     
-    checkEquals(res, 0.131629217146272)
+    #checkEquals(res, 0.131629217146272)
+    checkEquals(res, 0.1316292, tolerance=1e-6)
     
     
     # 30 seconds on linux 64 bits august 2012 (TC.) for N = 1000

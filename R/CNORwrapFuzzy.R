@@ -39,6 +39,8 @@ may not support makeCNOlist output anymore. ")
         data = CellNOptR::CNOlist(data)
     }
 
+
+
     ticBeg=Sys.time()
     if(is.null(paramsList)==TRUE){
         # Get default parameters
@@ -53,7 +55,8 @@ may not support makeCNOlist output anymore. ")
 
     #2.Checks data to model compatibility
     checkSignals(CNOlist=paramsList$data,model=paramsList$model)
-    NONCcutCompExp = preprocessing(paramsList$datam, paramsList$model)
+    #!!!! model (the PKN provided as an argument) is overwritten here
+    model = preprocessing(paramsList$data, paramsList$model, verbose=FALSE)
 
     #. Optimisation t1
     if (verbose==TRUE){
@@ -68,12 +71,12 @@ may not support makeCNOlist output anymore. ")
     t0 = Sys.time()
 
     T1opt<-gaDiscreteT1(CNOlist=paramsList$data,
-        model=NONCcutCompExp,
+        model=model,
         paramsList=paramsList,
         sizeFac=paramsList$sizeFac,
         NAFac=paramsList$NAFac,
         popSize=paramsList$popSize,
-        pMutation=paramsList$pmutation,
+        pMutation=paramsList$pMutation,
         maxTime=paramsList$maxTime,
         maxGens=paramsList$maxGens,
         stallGenMax=paramsList$stallGenMax,
@@ -84,14 +87,14 @@ may not support makeCNOlist output anymore. ")
     t1 = Sys.time()
 
     if (verbose==TRUE){
-        print(paste('Discrete GA Finished in: ', t1-t0, sep=""))
+        print(paste('Discrete GA Finished in: ', format(t1-t0), sep=""))
     }
 
     if (verbose==TRUE){
         print('Calling interpretDiscreteGA')
     }
     #13. Interpret and remove redundant logic gates
-    interpModel=interpretDiscreteGA(model=NONCcutCompExp,paramsList=paramsList,intString=T1opt$bString)
+    interpModel=interpretDiscreteGA(model=model,paramsList=paramsList,intString=T1opt$bString)
 
     # start making variable
     Res = list()
@@ -102,7 +105,7 @@ may not support makeCNOlist output anymore. ")
     Res$cutBit = interpModel$cutBitString
     Res$unRef = interpModel
     Res$paramsList = paramsList
-    Res$processedModel=NONCcutCompExp
+    Res$processedModel=model
 
     #SBS add MSE field to Res$unRef -- it may be better enough to use Res$t1opt$currBest here instead
     SimResults<-simFuzzyT1(
@@ -115,14 +118,16 @@ may not support makeCNOlist output anymore. ")
       simResults=SimResults,
       CNOlist=paramsList$data,
       model=Res$unRef$model,
-      indexList=indexFinder(paramsList$data, NONCcutCompExp),
+      indexList=indexFinder(paramsList$data, model, verbose=FALSE),
       timePoint="t1",
       sizeFac=paramsList$sizeFac,
       NAFac=paramsList$NAFac,
       nInTot=length(which(Res$unRef$model$interMat==-1)))
     nDataP<-sum(!is.na(paramsList$data@signals[[2]]))
     Score<-Score/nDataP
-    Res$unRef$simResults<-SimResults #probably don't need this, but it's nice for debugging purposes to have
+
+
+    #Res$unRef$simResults<-SimResults #probably don't need this, but it's nice for debugging purposes to have
     Res$unRef$MSE <-Score
     # 14. Refine models returned from GA
     # only do refinement if wanted (because it is VERY slow for large problems)
@@ -139,7 +144,7 @@ may not support makeCNOlist output anymore. ")
         refModel1$bit = interpModel$bitString
         t2 = Sys.time()
         if (verbose==TRUE){
-            print(paste('...First Refinement Complete ', t2-t1, sep=""))
+            print(paste('...First Refinement Complete ', format(t2-t1), sep=""))
         }
 
         if (verbose==TRUE){
@@ -154,7 +159,7 @@ may not support makeCNOlist output anymore. ")
         refModel2$bit = interpModel$cutBitString
         t3 = Sys.time()
         if (verbose==TRUE){
-            print(paste('...Second Refinement Complete ', t3-t2, sep=""))
+            print(paste('...Second Refinement Complete ', format(t3-t2), sep=""))
         }
 
         #15. Reduce Models
@@ -163,20 +168,24 @@ may not support makeCNOlist output anymore. ")
         prevIntString = T1opt$bString
         prevBitString = interpModel$cutBitString
         for (eachT in 1:length(paramsList$redThresh)) {
-            print(paramsList$redThresh[eachT])
+            if (verbose==TRUE){
+                print(paramsList$redThresh[eachT])
+            }
             t4=Sys.time()
             if (verbose==TRUE){
                 print(paste('Calling reduceFuzzy ', eachT, sep=""))
             }
             redModel = reduceFuzzy(firstCutOff=paramsList$redThresh[eachT],
                                    CNOlist=paramsList$data,
-                                   model=NONCcutCompExp,
+                                   model=model,
                                    res=T1opt,
                                    params=paramsList)
 
 
             t5=Sys.time()
-            print(t5-t4)
+            if (verbose==TRUE){
+                print(paste('...done ', format(t5-t4), sep=""))
+            }
 # refine parameters of reduced models
             if (all(redModel$intString==prevIntString) & all(redModel$bitString==prevBitString)){
                 if (verbose==TRUE){
@@ -196,7 +205,7 @@ may not support makeCNOlist output anymore. ")
                 currRedRef$bit = redModel$bitString
                 t6=Sys.time()
                 if (verbose==TRUE){
-                    print(paste('...done ', t6-t5, sep=""))
+                    print(paste('...done ', format(t6-t5), sep=""))
                 }
                 prevIntString = redModel$intString
                 prevBitString = redModel$bitString
@@ -207,13 +216,12 @@ may not support makeCNOlist output anymore. ")
         Res$redRef = RedRef
         t1 = Sys.time()
         if (verbose==TRUE){
-            print(c('RedRef Finished.  Total time RedRef below'))
-            print(t1-t0)
+            print(paste('RedRef Finished.  Total time RedRef ', format(t1-t0)))
         }
     }
     ticEnd=Sys.time()
     if (verbose==TRUE){
-        print(paste('Total Time: ', ticEnd-ticBeg, 'mins', sep=" "))
+        print(paste('Total Time: ', format(ticEnd-ticBeg), sep=" "))
     }
     return(Res)
 }

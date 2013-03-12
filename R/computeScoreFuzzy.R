@@ -14,7 +14,8 @@
 ##############################################################################
 #
 # File author(s): T. Cokelaer based on gaDiscrete from M.K. Morris
-computeScoreFuzzy <- function(CNOlist, model, simList=NULL, indexList=NULL, paramsList, intString, sizeFac=0.0001,NAFac=1){
+computeScoreFuzzy <- function(CNOlist, model, simList=NULL, indexList=NULL,
+    paramsList, intString=NULL, sizeFac=0.0001,NAFac=1){
     #initialise
 
     if ((class(CNOlist)=="CNOlist")==FALSE){
@@ -23,11 +24,17 @@ computeScoreFuzzy <- function(CNOlist, model, simList=NULL, indexList=NULL, para
 
 
     if (is.null(indexList)==TRUE){
-        indexList = indexFinder(CNOlist, model)
+        indexList = indexFinder(CNOlist, model, verbose=FALSE)
     }
     if (is.null(simList)==TRUE){
         simList = prep4simFuzzy(model, paramsList, verbose=FALSE)
     }
+
+    if (is.null(intString)==TRUE){
+        intString <- (sample.int(dim(paramsList$type2Funs)[1],
+            (simList$numType1+simList$numType2),replace=TRUE)) - 1
+    }
+
 
     nInTot = length(which(model$interMat==-1))
 
@@ -57,14 +64,14 @@ computeScoreFuzzy <- function(CNOlist, model, simList=NULL, indexList=NULL, para
         simListCut$kCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,3];
         simListCut$nCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,2];
         simListCut$gCube[simList$reshapeType2[type2Vals == i]] = paramsList$type2Funs[i,1];
-           }
-        simListCut$finalCube<-simListCut$finalCube[bitString,]
-        simListCut$ixNeg<-simListCut$ixNeg[bitString,]
-        simListCut$ignoreCube<-simListCut$ignoreCube[bitString,]
-        simListCut$gCube<-simListCut$gCube[bitString,]
-        simListCut$nCube<-simListCut$nCube[bitString,]
-        simListCut$kCube<-simListCut$kCube[bitString,]
-        simListCut$maxIx<-simListCut$maxIx[bitString]
+    }
+    simListCut$finalCube<-simListCut$finalCube[bitString,]
+    simListCut$ixNeg<-simListCut$ixNeg[bitString,]
+    simListCut$ignoreCube<-simListCut$ignoreCube[bitString,]
+    simListCut$gCube<-simListCut$gCube[bitString,]
+    simListCut$nCube<-simListCut$nCube[bitString,]
+    simListCut$kCube<-simListCut$kCube[bitString,]
+    simListCut$maxIx<-simListCut$maxIx[bitString]
 
     #compute the simulated results
     SimResults<-simFuzzyT1(CNOlist=CNOlist,model=ModelCut,simList=simListCut)
