@@ -53,9 +53,9 @@ cSimulator <- function(CNOlist, model, simList) {
 	indexInhibitors <- as.integer((indexList$inhibited)-1)
     nSignals <- length(indexSignals)
 
-	# cnolist
-	valueInhibitors <- as.integer(CNOlist@inhibitors)
-	valueStimuli <- as.integer(CNOlist@stimuli)
+	# cnolist changed to float in bug report 222
+	valueInhibitors <- as.numeric(CNOlist@inhibitors)
+	valueStimuli <- as.numeric(CNOlist@stimuli)
 
 
 	res = .Call("simulatorT1",

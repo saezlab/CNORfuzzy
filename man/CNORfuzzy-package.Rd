@@ -14,8 +14,8 @@ perturbation of some of the nodes in the network.
 \tabular{ll}{
 Package: \tab CNOR\cr
 Type: \tab Package\cr
-Version: \tab 1.1.3\cr
-Date: \tab 2011-11-21\cr
+Version: \tab 1.4.0\cr
+Date: \tab 2013-08-28\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 Depends: \tab R (>= 2.15.0), CellNOptR (>= 1.3.29), nloptr (>= 0.8.5) \cr

@@ -121,22 +121,22 @@ SEXP simulatorT1 (
     }
 
     counter=0;
-    int **valueInhibitors;
-    valueInhibitors = (int**) malloc(nCond * sizeof(int*));
+    float **valueInhibitors;
+    valueInhibitors = (float**) malloc(nCond * sizeof(float*));
     for (i = 0; i < nCond; i++) {
-        valueInhibitors[i] = (int*) malloc(nInhibitors * sizeof(int));
+        valueInhibitors[i] = (float*) malloc(nInhibitors * sizeof(float));
         for (j = 0; j < nInhibitors; j++) {
-            valueInhibitors[i][j] = INTEGER(valueInhibitors_in)[nCond*j+i];
+            valueInhibitors[i][j] = REAL(valueInhibitors_in)[nCond*j+i];
         }
     }
 
     counter=0;
-    int **valueStimuli;
-    valueStimuli = (int**) malloc(nCond * sizeof(int*));
+    float **valueStimuli;
+    valueStimuli = (float**) malloc(nCond * sizeof(int*));
     for (i = 0; i < nCond; i++) {
-        valueStimuli[i] = (int*) malloc(nStimuli * sizeof(int));
+        valueStimuli[i] = (float*) malloc(nStimuli * sizeof(float));
         for (j = 0; j < nStimuli; j++) {
-            valueStimuli[i][j] = INTEGER(valueStimuli_in)[nCond*j+i];
+            valueStimuli[i][j] = REAL(valueStimuli_in)[nCond*j+i];
         }
     }
 
@@ -214,7 +214,7 @@ SEXP simulatorT1 (
     float test_val = 1e-3;
 
     // create an initial values matrix
-    int init_values[nCond][nSpecies];
+    float init_values[nCond][nSpecies];
     for(i = 0; i < nCond; i++) {
         for(j = 0; j < nSpecies; j++) {
             init_values[i][j] = NA;

@@ -2,6 +2,22 @@
 \title{NEWS}
 \name{CNORfuzzy NEWS}
 
+\section{CHANGES IN VERSION 1.4.0 and 1.2.0}{
+    \itemize{
+        \item{cSimulator handles non integers values for the ihibitors and stimuli}
+	    \item{gaDiscreteT1.R: fix issue when only 1 model was returned within tolerance}
+    	\item{reduceFuzzy.R fix bug that causes seg faut (model was not cut properly)}
+    	\item{defaultParametersFuzzy.R: added nTF to set number of TF to arbitrary value (not tested)}
+    	\item{CNORwrapFuzzy.R: fixed pMutation argument that was not populated}
+    	\item{gaDiscrete functions return best score as well in the dataframe.}
+        \item{output names of the fields returned by gaDiscrete are now using camel lower case so that plotFit from CellNoptR can be used }
+	    \item{add C simulator}
+    }
+}
+
+
+
+
 \section{CHANGES IN VERSION 0.99.8}{
     \itemize{
         \item{add NEWS.Rd in inst/}
