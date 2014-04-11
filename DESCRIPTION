@@ -1,7 +1,7 @@
 Package: CNORfuzzy
 Type: Package
 Title: Addon to CellNOptR: Fuzzy Logic
-Version: 1.6.0
+Version: 1.7.0
 Date: 2013-8-28
 Author: M. Morris, T. Cokelaer
 Maintainer: T. Cokelaer <cokelaer@ebi.ac.uk>
